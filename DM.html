@@ -897,49 +897,11 @@ optCutOff3 &lt;- optimalCutoff(test$pluie.demain, glm.pred3, optimiseFor = &quot
 <p>Selon les résultats, le meilleur modèle semble être le 3, même si le 2 reste assez proche. Je vais faire les predictions et les garder en format csv.</p>
 <pre class="r"><code>final_test &lt;- read.csv(&#39;meteo.test.csv&#39;)
 ## change the names
-final_test &lt;- final_test %&gt;% rename(Temp_moy = Temperature.daily.mean..2.m.above.gnd., 
-                          Humidite_moy = Relative.Humidity.daily.mean..2.m.above.gnd.,
-                          Pression_moy = Mean.Sea.Level.Pressure.daily.mean..MSL.,
-                          Precipitations_jour = Total.Precipitation.daily.sum..sfc.,
-                          Neige_jour = Snowfall.amount.raw.daily.sum..sfc.,
-                          Nebulosite_moy = Total.Cloud.Cover.daily.mean..sfc.,
-                          Nebulosite_high = High.Cloud.Cover.daily.mean..high.cld.lay.,
-                          Nebulosite_medium = Medium.Cloud.Cover.daily.mean..mid.cld.lay.,
-                          Nebulosite_low = Low.Cloud.Cover.daily.mean..low.cld.lay.,
-                          Sunshine_jour = Sunshine.Duration.daily.sum..sfc.,
-                          Radiation_jour = Shortwave.Radiation.daily.sum..sfc.,
-                          Vent_vitesse_10m = Wind.Speed.daily.mean..10.m.above.gnd.,      
-                          Vent_dir_10m = Wind.Direction.daily.mean..10.m.above.gnd.,
-                          Vent_vitesse_80m = Wind.Speed.daily.mean..80.m.above.gnd.,
-                          Vent_dir_80m = Wind.Direction.daily.mean..80.m.above.gnd.,
-                          Vent_vitesse_900hpa = Wind.Speed.daily.mean..900.mb.,
-                          Vent_dir_900hpa = Wind.Direction.daily.mean..900.mb.,
-                          Rafales_moy = Wind.Gust.daily.mean..sfc.,
-                          Temp_max_2m = Temperature.daily.max..2.m.above.gnd. ,
-                          Temp_min_2m = Temperature.daily.min..2.m.above.gnd. ,
-                          Humidite_max = Relative.Humidity.daily.max..2.m.above.gnd. ,
-                          Humidite_min = Relative.Humidity.daily.min..2.m.above.gnd. ,
-                          Pression_max = Mean.Sea.Level.Pressure.daily.max..MSL.,
+final_test &lt;- final_test %&gt;% rename(Vent_dir_900hpa = Wind.Direction.daily.mean..900.mb.,
                           Pression_min = Mean.Sea.Level.Pressure.daily.min..MSL. ,
-                          Nebulosite_total_max = Total.Cloud.Cover.daily.max..sfc.,
-                          Nebulosite_total_min = Total.Cloud.Cover.daily.min..sfc.,
-                          Nebulos_high_max = High.Cloud.Cover.daily.max..high.cld.lay.,
-                          Nebulos_high_min = High.Cloud.Cover.daily.min..high.cld.lay.,
-                          Nebulos_medium_max = Medium.Cloud.Cover.daily.max..mid.cld.lay.,
-                          Nebulos_medium_min = Medium.Cloud.Cover.daily.min..mid.cld.lay.,
-                          Nebulos_low_max = Low.Cloud.Cover.daily.max..low.cld.lay.,
-                          Nebulos_low_min = Low.Cloud.Cover.daily.min..low.cld.lay.,
-                          Vent_vitesse_10m_max = Wind.Speed.daily.max..10.m.above.gnd.,
-                          Vent_vitesse_10m_min = Wind.Speed.daily.min..10.m.above.gnd.,
-                          Vent_vitesse_80m_max = Wind.Speed.daily.max..80.m.above.gnd.,
-                          Vent_vitesse_80m_min = Wind.Speed.daily.min..80.m.above.gnd.,
-                          Vent_vitesse_900hpa_max = Wind.Speed.daily.max..900.mb.,
-                          Vent_vitesse_900hpa_min = Wind.Speed.daily.min..900.mb.,
-                          Rafales_max = Wind.Gust.daily.max..sfc.,
-                          Rafales_min = Wind.Gust.daily.min..sfc.)
+                          Nebulos_medium_max = Medium.Cloud.Cover.daily.max..mid.cld.lay.)
 
 glm.final_test &lt;- predict(reg.model2, newdata = final_test, type = &quot;response&quot;)
-
 
 glm.final = ifelse(glm.final_test &gt; optCutOff3$optimalCutoff, 1, 0)
 
@@ -948,7 +910,12 @@ write.csv(glm.final,&#39;meteo.test_final.csv&#39;)</code></pre>
 <div id="conclusions" class="section level2">
 <h2>Conclusions</h2>
 <p>J’ai testé plusieurs méthodes vues en cours pour pouvoir faire une prédiction en faisant une régression logistique, car les données à prédire sont logiques (TRUE et FALSE).</p>
-<p>Les méthodes utilisées sont : * Step en partant du modèle complet et en utilisant la méthode backwards, en optimisant l’AIC * Step en partant du modèle simple et en utilisant la méthode forward, en optimisant l’AIC * Regsubsets et la méthode exhaustive, en optimisant le BIC</p>
+<p>Les méthodes utilisées sont :</p>
+<ul>
+<li>Step en partant du modèle complet et en utilisant la méthode backwards, en optimisant l’AIC</li>
+<li>Step en partant du modèle simple et en utilisant la méthode forward, en optimisant l’AIC</li>
+<li>Regsubsets et la méthode exhaustive, en optimisant le BIC</li>
+</ul>
 <p>Pour sélectionner le modèle j’ai vérifié la prédiction sur le 30% des données de train, et j’ai comparé le recall, la précision et l’erreur de classification.</p>
 <p>À la suite de cela, j’ai sélectionné le modèle trouve avec regsubsets, même si les résultats sont assez proches, car j’ai préféré privilégier un modèle simple avec une corrélation basse entre les variables explicatives. J’aurais pu comparer le temps machine de chaque méthode pour affiner ma sélection, mais comme le dataframe est petit, je n’ai pas voulu tenir compte de ce critère.</p>
 <p>La prédiction finale est enregistrée en csv et les valeurs ont été arrondies selon l’optimal cutoff trouvé lors de l’entraînement des données.</p>
